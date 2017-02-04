@@ -1,0 +1,13 @@
+{
+    "name": "popcornphp/imagecompress",
+    "description": "Simple compress for images",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Alexander Shapoval",
+            "email": "popcornphp@gmail.com"
+        }
+    ],
+    "require": {}
+}

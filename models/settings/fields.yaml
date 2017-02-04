@@ -1,0 +1,37 @@
+fields:
+    is_change_quality:
+        label: Change quality
+        comment: The less quality - the smaller image
+        type: switch
+        span: full
+
+    quality:
+        label: Quality
+        type: dropdown
+        span: left
+        trigger:
+            action: enable
+            field: is_change_quality
+            condition: checked
+
+    is_change_size:
+        label: Change size
+        comment: If the size of the image more than this - it will be reduced to the specified
+        type: switch
+        span: full
+
+    max_width:
+        label: Max width
+        span: left
+        trigger:
+            action: enable
+            field: is_change_size
+            condition: checked
+
+    max_height:
+        label: Max height
+        span: left
+        trigger:
+            action: enable
+            field: is_change_size
+            condition: checked
