@@ -17,10 +17,8 @@ class Settings extends Model
         'is_change_quality' => 'boolean',
         'quality' => 'required|numeric|min:1|max:100',
 
-        'is_change_width' => 'boolean',
+        'is_change_size' => 'boolean',
         'max_width' => 'required|numeric|min:1',
-
-        'is_change_height' => 'boolean',
         'max_height' => 'required|numeric|min:1',
     ];
 
