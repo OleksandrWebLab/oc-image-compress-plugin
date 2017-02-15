@@ -21,35 +21,40 @@ class Plugin extends PluginBase
     {
         File::extend(function ($model) {
             $model->bindEvent('model.afterSave', function () use ($model) {
-                $is_change_quality = Settings::get('is_change_quality');
-                $is_change_size = Settings::get('is_change_size');
-
                 if (
-                    $is_change_quality == true ||
-                    $is_change_size == true
+                    $model->getContentType() == 'image/gif' ||
+                    $model->getContentType() == 'image/png' ||
+                    $model->getContentType() == 'image/jpeg'
                 ) {
-                    $width = false;
-                    $height = false;
+                    $is_change_quality = Settings::get('is_change_quality');
+                    $is_change_size = Settings::get('is_change_size');
+                    
+                    if (
+                        $is_change_quality == true ||
+                        $is_change_size == true
+                    ) {
+                        $width = false;
+                        $height = false;
 
-                    $options = [
-                        'quality' => 100,
-                    ];
+                        $options = [
+                            'quality' => 100,
+                        ];
 
 
-                    if ($is_change_quality == true) {
-                        $options['quality'] = Settings::get('quality');
+                        if ($is_change_quality == true) {
+                            $options['quality'] = Settings::get('quality');
+                        }
+
+                        if ($is_change_size == true) {
+                            $width = Settings::get('max_width');
+                            $height = Settings::get('max_height');
+                        }
+
+                        $filePath = storage_path() . '/app/' . $model->getDiskPath();
+                        Resizer::open($filePath)
+                            ->resize($width, $height, $options)
+                            ->save($filePath);
                     }
-
-                    if ($is_change_size == true) {
-                        $width = Settings::get('max_width');
-                        $height = Settings::get('max_height');
-                    }
-
-
-                    $filePath = storage_path() . '/app/' . $model->getDiskPath();
-                    Resizer::open($filePath)
-                        ->resize($width, $height, $options)
-                        ->save($filePath);
                 }
             });
         });
