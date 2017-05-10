@@ -14,6 +14,7 @@ class Plugin extends PluginBase
             'description' => 'Simple compress for images',
             'author' => 'Alexander Shapoval',
             'icon' => 'icon-compress',
+            'homepage' => 'https://github.com/PopcornPHP/oc-imagecompress-plugin'
         ];
     }
 
@@ -39,7 +40,6 @@ class Plugin extends PluginBase
                         $options = [
                             'quality' => 100,
                         ];
-
 
                         if ($is_change_quality == true) {
                             $options['quality'] = Settings::get('quality');
