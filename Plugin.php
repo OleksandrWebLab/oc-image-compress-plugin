@@ -1,59 +1,71 @@
 <?php namespace PopcornPHP\ImageCompress;
 
-use PopcornPHP\ImageCompress\Models\Settings;
 use System\Classes\PluginBase;
 use October\Rain\Database\Attach\File;
 use October\Rain\Database\Attach\Resizer;
+use PopcornPHP\ImageCompress\Models\Settings as ImageCompressSettings;
 
 class Plugin extends PluginBase
 {
     public function pluginDetails()
     {
         return [
-            'name' => 'ImageCompress',
+            'name'        => 'ImageCompress',
             'description' => 'Simple compress for images',
-            'author' => 'Alexander Shapoval',
-            'icon' => 'icon-compress',
-            'homepage' => 'https://github.com/PopcornPHP/oc-imagecompress-plugin'
+            'author'      => 'Alexander Shapoval',
+            'icon'        => 'icon-compress',
+            'homepage'    => 'https://popcornphp.github.io'
         ];
     }
 
     public function boot()
     {
         File::extend(function ($model) {
-            $model->bindEvent('model.afterSave', function () use ($model) {
+            $model->bindEvent('model.beforeCreate', function () use ($model) {
                 if (
                     $model->getContentType() == 'image/gif' ||
                     $model->getContentType() == 'image/png' ||
-                    $model->getContentType() == 'image/jpeg'
+                    $model->getContentType() == 'image/jpeg' ||
+                    $model->getContentType() == 'image/webp'
                 ) {
-                    $is_change_quality = Settings::get('is_change_quality');
-                    $is_change_size = Settings::get('is_change_size');
-                    
+                    $is_change_quality = ImageCompressSettings::get('is_change_quality');
+                    $is_change_width = ImageCompressSettings::get('is_change_width');
+                    $is_change_height = ImageCompressSettings::get('is_change_height');
+
                     if (
                         $is_change_quality == true ||
-                        $is_change_size == true
+                        $is_change_width == true ||
+                        $is_change_height == true
                     ) {
+                        $options = [];
                         $width = false;
                         $height = false;
 
-                        $options = [
-                            'quality' => 100,
-                        ];
-
                         if ($is_change_quality == true) {
-                            $options['quality'] = Settings::get('quality');
+                            $options['quality'] = ImageCompressSettings::get('quality');
                         }
 
-                        if ($is_change_size == true) {
-                            $width = Settings::get('max_width');
-                            $height = Settings::get('max_height');
+                        if ($is_change_width == true || $is_change_height == true) {
+                            $options['mode'] = ImageCompressSettings::get('resize_mode');
                         }
 
-                        $filePath = storage_path() . '/app/' . $model->getDiskPath();
+                        if ($is_change_width == true) {
+                            $width = ImageCompressSettings::get('max_width');
+                        }
+
+                        if ($is_change_height == true) {
+                            $height = ImageCompressSettings::get('max_height');
+                        }
+
+                        $filePath = $model->getLocalPath();
+
                         Resizer::open($filePath)
                             ->resize($width, $height, $options)
                             ->save($filePath);
+
+                        clearstatcache();
+
+                        $model->file_size = filesize($filePath);
                     }
                 }
             });
@@ -64,13 +76,13 @@ class Plugin extends PluginBase
     {
         return [
             'compress' => [
-                'label' => 'Compress images',
+                'label'       => 'Compress images',
                 'description' => 'Image compression management',
-                'category' => 'system::lang.system.categories.system',
-                'icon' => 'icon-compress',
-                'class' => 'PopcornPHP\ImageCompress\Models\Settings',
-                'order' => 500,
-                'keywords' => 'images'
+                'category'    => 'system::lang.system.categories.system',
+                'icon'        => 'icon-compress',
+                'class'       => 'PopcornPHP\ImageCompress\Models\Settings',
+                'order'       => 500,
+                'keywords'    => 'images compress'
             ]
         ];
     }
