@@ -16,12 +16,12 @@ class Settings extends Model
     public $rules = [
         'is_change_quality' => 'boolean',
         'quality'           => 'required|numeric|min:1|max:100',
-
         'resize_mode'       => 'in:auto,crop,exact,portrait,landscape',
         'is_change_width'   => 'boolean',
         'max_width'         => 'required|numeric|min:1',
         'is_change_height'  => 'boolean',
         'max_height'        => 'required|numeric|min:1',
+        'is_make_enlarge'   => 'boolean',
     ];
 
     public function initSettingsData()
@@ -34,5 +34,6 @@ class Settings extends Model
         $this->max_width = 800;
         $this->is_change_height = false;
         $this->max_height = 600;
+        $this->is_make_enlarge = false;
     }
 }
