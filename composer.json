@@ -1,6 +1,6 @@
 {
     "name": "popcornphp/imagecompress",
-    "description": "Simple compress for images",
+    "description": "Native compress and resize for images",
     "type": "project",
     "license": "MIT",
     "authors": [

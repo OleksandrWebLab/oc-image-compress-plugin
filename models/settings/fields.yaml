@@ -74,3 +74,9 @@ fields:
             action: enable
             field: is_change_height
             condition: checked
+
+    is_make_enlarge:
+        label: Make enlarge
+        comment: If the image is smaller than the maximum width and/or height, this image will be enlarged to the maximum width and/or height. We recommend that you do not need to turn it on
+        type: checkbox
+        span: left

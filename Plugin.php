@@ -11,10 +11,10 @@ class Plugin extends PluginBase
     {
         return [
             'name'        => 'ImageCompress',
-            'description' => 'Simple compress for images',
+            'description' => 'Native compress and resize for images',
             'author'      => 'Alexander Shapoval',
             'icon'        => 'icon-compress',
-            'homepage'    => 'https://popcornphp.github.io'
+            'homepage'    => 'https://popcornphp.github.io',
         ];
     }
 
@@ -28,40 +28,63 @@ class Plugin extends PluginBase
                     $model->getContentType() == 'image/jpeg' ||
                     $model->getContentType() == 'image/webp'
                 ) {
-                    $is_change_quality = ImageCompressSettings::get('is_change_quality');
-                    $is_change_width = ImageCompressSettings::get('is_change_width');
-                    $is_change_height = ImageCompressSettings::get('is_change_height');
+                    $isChangeQuality = ImageCompressSettings::get('is_change_quality');
+                    $isChangeWidth = ImageCompressSettings::get('is_change_width');
+                    $isChangeHeight = ImageCompressSettings::get('is_change_height');
+                    $isMakeEnlarge = ImageCompressSettings::get('is_make_enlarge', false);
 
                     if (
-                        $is_change_quality == true ||
-                        $is_change_width == true ||
-                        $is_change_height == true
+                        $isChangeQuality == true ||
+                        $isChangeWidth == true ||
+                        $isChangeHeight == true
                     ) {
-                        $options = [];
-                        $width = false;
-                        $height = false;
+                        /**
+                         * Prepare
+                         */
+                        $filePath = $model->getLocalPath();
 
-                        if ($is_change_quality == true) {
+                        $options = [];
+                        $maxWidth = false;
+                        $maxHeight = false;
+                        list($originalWidth, $originalHeight) = getimagesize($filePath);
+
+                        $image = Resizer::open($filePath);
+
+                        /**
+                         * Set options (set quality and mode resize)
+                         */
+                        if ($isChangeQuality == true) {
                             $options['quality'] = ImageCompressSettings::get('quality');
                         }
 
-                        if ($is_change_width == true || $is_change_height == true) {
+                        if ($isChangeWidth == true || $isChangeHeight == true) {
                             $options['mode'] = ImageCompressSettings::get('resize_mode');
                         }
 
-                        if ($is_change_width == true) {
-                            $width = ImageCompressSettings::get('max_width');
+                        $image->setOptions($options);
+
+                        /**
+                         * Set width and height
+                         */
+                        if ($isChangeWidth == true) {
+                            $maxWidth = ImageCompressSettings::get('max_width');
                         }
 
-                        if ($is_change_height == true) {
-                            $height = ImageCompressSettings::get('max_height');
+                        if ($isChangeHeight == true) {
+                            $maxHeight = ImageCompressSettings::get('max_height');
                         }
 
-                        $filePath = $model->getLocalPath();
+                        if (
+                            ($isChangeWidth == true || $isChangeHeight == true) &&
+                            ($isMakeEnlarge == true || $originalWidth > $maxWidth || $originalHeight > $maxHeight)
+                        ) {
+                            $image->resize($maxWidth, $maxHeight);
+                        }
 
-                        Resizer::open($filePath)
-                            ->resize($width, $height, $options)
-                            ->save($filePath);
+                        /**
+                         * Save image, set new size of file
+                         */
+                        $image->save($filePath);
 
                         clearstatcache();
 
@@ -82,8 +105,8 @@ class Plugin extends PluginBase
                 'icon'        => 'icon-compress',
                 'class'       => 'PopcornPHP\ImageCompress\Models\Settings',
                 'order'       => 500,
-                'keywords'    => 'images compress'
-            ]
+                'keywords'    => 'images compress',
+            ],
         ];
     }
 }
