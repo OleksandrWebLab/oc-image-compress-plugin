@@ -22,12 +22,7 @@ class Plugin extends PluginBase
     {
         File::extend(function ($model) {
             $model->bindEvent('model.beforeCreate', function () use ($model) {
-                if (
-                    $model->getContentType() == 'image/gif' ||
-                    $model->getContentType() == 'image/png' ||
-                    $model->getContentType() == 'image/jpeg' ||
-                    $model->getContentType() == 'image/webp'
-                ) {
+                if ($model->isImage()) {
                     $isChangeQuality = ImageCompressSettings::get('is_change_quality');
                     $isChangeWidth = ImageCompressSettings::get('is_change_width');
                     $isChangeHeight = ImageCompressSettings::get('is_change_height');
