@@ -99,9 +99,16 @@ class Plugin extends PluginBase
                 'category'    => 'system::lang.system.categories.system',
                 'icon'        => 'icon-compress',
                 'class'       => 'PopcornPHP\ImageCompress\Models\Settings',
+                'permissions' => ['popcornphp.imagecompress.access_settings'],
                 'order'       => 500,
                 'keywords'    => 'images compress',
             ],
+        ];
+    }
+    
+    public function registerPermissions() {
+        return [
+            'popcornphp.imagecompress.access_settings' => ['tab' => 'Image Compress', 'label' => 'Access to Image Compress settings'],
         ];
     }
 }
