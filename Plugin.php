@@ -2,7 +2,7 @@
 
 use System\Classes\PluginBase;
 use October\Rain\Database\Attach\File;
-use October\Rain\Database\Attach\Resizer;
+use October\Rain\Resize\Resizer;
 use PopcornPHP\ImageCompress\Models\Settings as ImageCompressSettings;
 
 class Plugin extends PluginBase
